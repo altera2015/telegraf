@@ -57,7 +57,7 @@ var sampleConfig = `
   interval = "10m"
   
   ## UserAgent
-  user_agent = "You Server name you@email.com"
+  user_agent = "Your Server name <you@email.com>"
 `
 
 func (n *NOAAWeatherAPI) SampleConfig() string {
@@ -70,7 +70,6 @@ func (n *NOAAWeatherAPI) Description() string {
 
 func (n *NOAAWeatherAPI) Gather(acc telegraf.Accumulator) error {
 	var wg sync.WaitGroup
-
 
 	for _, station := range n.StationID {
 		addr := n.formatURL("/stations/%s/observations/latest", station)
@@ -123,7 +122,7 @@ func (n *NOAAWeatherAPI) gatherURL(addr string) (*Status, error) {
 		return nil, err
 	}
 
-	if mediaType != "application/json" {
+	if mediaType != "application/ld+json" {
 		return nil, fmt.Errorf("%s returned unexpected content type %s", addr, mediaType)
 	}
 
@@ -202,7 +201,7 @@ func (n *NOAAWeatherAPI) GatherWeather(acc telegraf.Accumulator, status *Status)
 	if err != nil {
 		fmt.Errorf("%s", err)
 	} else {
-		acc.AddFields("weather", fields, tags, tm);
+		acc.AddFields("noaa_weather", fields, tags, tm);
 	}
 }
 

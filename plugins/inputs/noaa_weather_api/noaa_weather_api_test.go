@@ -167,7 +167,7 @@ func TestWeatherGeneratesMetrics(t *testing.T) {
 		var rsp string
 		if r.URL.Path == "/stations/KSUA/observations/latest" {
 			rsp = sampleStatusResponse
-			w.Header()["Content-Type"] = []string{"application/json"}
+			w.Header()["Content-Type"] = []string{"application/ld+json"}
 		} else {
 			require.Fail(t, "Cannot handle request")
 		}
@@ -216,7 +216,7 @@ func TestWeatherGeneratesImperial(t *testing.T) {
 		var rsp string
 		if r.URL.Path == "/stations/KSUA/observations/latest" {
 			rsp = sampleStatusResponse
-			w.Header()["Content-Type"] = []string{"application/json"}
+			w.Header()["Content-Type"] = []string{"application/ld+json"}
 		} else {
 			require.Fail(t, "Cannot handle request")
 		}
@@ -265,7 +265,7 @@ func TestWeatherGeneratesImperialMultiple(t *testing.T) {
 		var rsp string
 		if r.URL.Path == "/stations/KSUA/observations/latest" {
 			rsp = sampleStatusResponse
-			w.Header()["Content-Type"] = []string{"application/json"}
+			w.Header()["Content-Type"] = []string{"application/ld+json"}
 		} else {
 			require.Fail(t, "Cannot handle request")
 		}
