@@ -17,13 +17,12 @@ import (
 
 // https://www.weather.gov/documentation/services-web-api#/default/station_observation_latest
 
-
 const (
 	nwaRequestSeveralStationID int = 20
 	defaultStationId               = "KSUA"
 	defaultBaseURL                 = "https://api.weather.gov/"
 	defaultResponseTimeout         = time.Second * 5
-	defaultUnits                   = "metric"
+	defaultUnits                   = "imperial"
 )
 
 type NOAAWeatherAPI struct {
@@ -32,8 +31,8 @@ type NOAAWeatherAPI struct {
 	ResponseTimeout config.Duration `toml:"response_timeout"`
 	Units           string          `toml:"units"`
 	UserAgent       string          `toml:"user_agent"`
-	client        *http.Client
-	baseParsedURL *url.URL
+	client          *http.Client
+	baseParsedURL   *url.URL
 }
 
 var sampleConfig = `
@@ -50,7 +49,7 @@ var sampleConfig = `
 
   ## Preferred unit system for temperature and wind speed. Can be one of
   ## "metric" or "imperial".
-  # units = "metric"
+  # units = "imperial"
 
   ## Query interval;
   ## minutes.
@@ -104,10 +103,10 @@ func (n *NOAAWeatherAPI) createHTTPClient() *http.Client {
 }
 
 func (n *NOAAWeatherAPI) gatherURL(addr string) (*Status, error) {
-	req, err := http.NewRequest("GET", addr, nil);
-	req.Header.Add("Accept", "application/ld+json");
-	req.Header.Add("User-Agent", n.UserAgent);
-	resp, err := n.client.Do(req);
+	req, err := http.NewRequest("GET", addr, nil)
+	req.Header.Add("Accept", "application/ld+json")
+	req.Header.Add("User-Agent", n.UserAgent)
+	resp, err := n.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error making HTTP request to %s: %s", addr, err)
 	}
@@ -133,17 +132,17 @@ type ApiValue struct {
 	UnitCode       string  `json:"unitCode"`
 	Value          float64 `json:"value"`
 	QualityControl string  `json:"qualityControl"`
-} 
-	
+}
+
 type Status struct {
-	Temperature ApiValue        `json:"temperature"`
-	Humidity    ApiValue        `json:"relativeHumidity"`
+	Temperature        ApiValue `json:"temperature"`
+	Humidity           ApiValue `json:"relativeHumidity"`
 	BarometricPressure ApiValue `json:"barometricPressure"`
-	Visibility ApiValue         `json:"visibility"`
-	WindSpeed ApiValue          `json:"windSpeed"`
-	WindDirection ApiValue      `json:"windDirection"`	
-	Dewpoint ApiValue           `json:"dewpoint"`	
-	Timestamp string            `json:"timestamp"`
+	Visibility         ApiValue `json:"visibility"`
+	WindSpeed          ApiValue `json:"windSpeed"`
+	WindDirection      ApiValue `json:"windDirection"`
+	Dewpoint           ApiValue `json:"dewpoint"`
+	Timestamp          string   `json:"timestamp"`
 }
 
 func gatherWeatherURL(r io.Reader) (*Status, error) {
@@ -159,52 +158,50 @@ func (n *NOAAWeatherAPI) UnitConversion(value ApiValue) float64 {
 
 	switch value.UnitCode {
 	case "wmoUnit:degC":
-		if (n.Units == "imperial" ) {
-			return value.Value * 9.0 / 5.0 + 32;
+		if n.Units == "imperial" {
+			return value.Value*9.0/5.0 + 32
 		} else {
-			return value.Value;
+			return value.Value
 		}
 	case "wmoUnit:km_h-1":
-		if (n.Units == "imperial" ) {
-			return value.Value / 1.609;
+		if n.Units == "imperial" {
+			return value.Value / 1.609
 		} else {
-			return value.Value;
+			return value.Value
 		}
 	case "wmoUnit:m":
-		if (n.Units == "imperial" ) {
-			return value.Value / 1609.0;
+		if n.Units == "imperial" {
+			return value.Value / 1609.0
 		} else {
-			return value.Value;
-		}		
+			return value.Value
+		}
 	default:
-		return value.Value;
+		return value.Value
 	}
 }
 
 func (n *NOAAWeatherAPI) GatherWeather(acc telegraf.Accumulator, status *Status) {
 	fields := map[string]interface{}{
-		"pressure":    status.BarometricPressure.Value,
-		"dewpoint":    status.Dewpoint.Value,
+		"pressure":     status.BarometricPressure.Value,
+		"dewpoint":     status.Dewpoint.Value,
 		"temperature":  n.UnitConversion(status.Temperature),
-		"humidity":  status.Humidity.Value,		
-		"visibility":  n.UnitConversion(status.Visibility),
+		"humidity":     status.Humidity.Value,
+		"visibility":   n.UnitConversion(status.Visibility),
 		"wind_degrees": status.WindDirection.Value,
 		"wind_speed":   n.UnitConversion(status.WindSpeed),
-	}			
+	}
 	tags := map[string]string{
-		"station":  "KSUA",
+		"station": "KSUA",
 	}
 
-
-	layout := "2006-01-02T15:04:05Z07:00";
-	tm,err := time.Parse(layout, status.Timestamp)
+	layout := "2006-01-02T15:04:05Z07:00"
+	tm, err := time.Parse(layout, status.Timestamp)
 	if err != nil {
 		fmt.Errorf("%s", err)
 	} else {
-		acc.AddFields("noaa_weather", fields, tags, tm);
+		acc.AddFields("noaa_weather", fields, tags, tm)
 	}
 }
-
 
 func init() {
 	inputs.Add("noaa_weather_api", func() telegraf.Input {
@@ -239,9 +236,8 @@ func (n *NOAAWeatherAPI) Init() error {
 func (n *NOAAWeatherAPI) formatURL(path string, station_id string) string {
 
 	v := url.Values{
-		"require_qc":    []string{"false"},
+		"require_qc": []string{"false"},
 	}
-
 
 	relative := &url.URL{
 		Path:     fmt.Sprintf(path, url.PathEscape(station_id)),

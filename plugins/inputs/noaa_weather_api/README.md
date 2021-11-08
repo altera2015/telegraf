@@ -20,7 +20,7 @@ Station idenifiers can be found in the [noaa weather api][].
   # response_timeout = "5s"
 
   ## Preferred unit system for temperature and wind speed. Can be one of
-  ## "metric", "imperial", or "standard".
+  ## "metric" or "imperial".
   # units = "metric"
 
   ## Query interval;

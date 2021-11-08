@@ -190,26 +190,24 @@ func TestWeatherGeneratesMetrics(t *testing.T) {
 
 	expected := []telegraf.Metric{
 		testutil.MustMetric(
-			"weather",
+			"noaa_weather",
 			map[string]string{
 				"station": "KSUA",
 			},
 			map[string]interface{}{
-				"temperature":    float64(21),
-				"humidity":       float64(52.802638324228),
-				"pressure":       float64(101520),
-				"visibility":     float64(16090),
-				"dewpoint":       float64(11),
-				"wind_speed":     float64(22.32),
-				"wind_degrees":   float64(340),
+				"temperature":  float64(21),
+				"humidity":     float64(52.802638324228),
+				"pressure":     float64(101520),
+				"visibility":   float64(16090),
+				"dewpoint":     float64(11),
+				"wind_speed":   float64(22.32),
+				"wind_degrees": float64(340),
 			},
 			time.Unix(1636311000, 0),
 		),
 	}
 	testutil.RequireMetricsEqual(t, expected, acc.GetTelegrafMetrics())
 }
-
-
 
 func TestWeatherGeneratesImperial(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -239,26 +237,24 @@ func TestWeatherGeneratesImperial(t *testing.T) {
 
 	expected := []telegraf.Metric{
 		testutil.MustMetric(
-			"weather",
+			"noaa_weather",
 			map[string]string{
 				"station": "KSUA",
 			},
 			map[string]interface{}{
-				"temperature":    float64(69.8),
-				"humidity":       float64(52.802638324228),
-				"pressure":       float64(101520),
-				"visibility":     float64(10),
-				"dewpoint":       float64(11),
-				"wind_speed":     float64(13.871970167806092),
-				"wind_degrees":   float64(340),
+				"temperature":  float64(69.8),
+				"humidity":     float64(52.802638324228),
+				"pressure":     float64(101520),
+				"visibility":   float64(10),
+				"dewpoint":     float64(11),
+				"wind_speed":   float64(13.871970167806092),
+				"wind_degrees": float64(340),
 			},
 			time.Unix(1636311000, 0),
 		),
 	}
 	testutil.RequireMetricsEqual(t, expected, acc.GetTelegrafMetrics())
 }
-
-
 
 func TestWeatherGeneratesImperialMultiple(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -288,41 +284,40 @@ func TestWeatherGeneratesImperialMultiple(t *testing.T) {
 
 	expected := []telegraf.Metric{
 		testutil.MustMetric(
-			"weather",
+			"noaa_weather",
 			map[string]string{
 				"station": "KSUA",
 			},
 			map[string]interface{}{
-				"temperature":    float64(69.8),
-				"humidity":       float64(52.802638324228),
-				"pressure":       float64(101520),
-				"visibility":     float64(10),
-				"dewpoint":       float64(11),
-				"wind_speed":     float64(13.871970167806092),
-				"wind_degrees":   float64(340),
+				"temperature":  float64(69.8),
+				"humidity":     float64(52.802638324228),
+				"pressure":     float64(101520),
+				"visibility":   float64(10),
+				"dewpoint":     float64(11),
+				"wind_speed":   float64(13.871970167806092),
+				"wind_degrees": float64(340),
 			},
 			time.Unix(1636311000, 0),
 		),
 		testutil.MustMetric(
-			"weather",
+			"noaa_weather",
 			map[string]string{
 				"station": "KSUA",
 			},
 			map[string]interface{}{
-				"temperature":    float64(69.8),
-				"humidity":       float64(52.802638324228),
-				"pressure":       float64(101520),
-				"visibility":     float64(10),
-				"dewpoint":       float64(11),
-				"wind_speed":     float64(13.871970167806092),
-				"wind_degrees":   float64(340),
+				"temperature":  float64(69.8),
+				"humidity":     float64(52.802638324228),
+				"pressure":     float64(101520),
+				"visibility":   float64(10),
+				"dewpoint":     float64(11),
+				"wind_speed":   float64(13.871970167806092),
+				"wind_degrees": float64(340),
 			},
 			time.Unix(1636311000, 0),
-		),		
+		),
 	}
 	testutil.RequireMetricsEqual(t, expected, acc.GetTelegrafMetrics())
 }
-
 
 func TestFormatURL(t *testing.T) {
 	n := &NOAAWeatherAPI{
@@ -340,7 +335,5 @@ func TestDefaultUnits(t *testing.T) {
 	n := &NOAAWeatherAPI{}
 	require.NoError(t, n.Init())
 
-	require.Equal(t, "metric", n.Units)
+	require.Equal(t, "imperial", n.Units)
 }
-
-
