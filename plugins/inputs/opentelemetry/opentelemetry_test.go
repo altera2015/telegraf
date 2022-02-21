@@ -42,8 +42,8 @@ func TestOpenTelemetry(t *testing.T) {
 	t.Cleanup(func() { _ = metricExporter.Shutdown(context.Background()) })
 
 	pusher := controller.New(
-		processor.New(
-			simple.NewWithExactDistribution(),
+		processor.NewFactory(
+			simple.NewWithHistogramDistribution(),
 			metricExporter,
 		),
 		controller.WithExporter(metricExporter),
@@ -53,7 +53,7 @@ func TestOpenTelemetry(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() { _ = pusher.Stop(context.Background()) })
 
-	global.SetMeterProvider(pusher.MeterProvider())
+	global.SetMeterProvider(pusher)
 
 	// write metrics
 	meter := global.Meter("library-name")
