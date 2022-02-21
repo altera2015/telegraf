@@ -3,13 +3,13 @@
 set -eux
 
 ARCH=$(uname -m)
-GO_VERSION="1.17.2"
+GO_VERSION="1.17.7"
 if [ "$ARCH" = 'arm64' ]; then
     GO_ARCH="darwin-arm64"
-    GO_VERSION_SHA="ce8771bd3edfb5b28104084b56bbb532eeb47fbb7769c3e664c6223712c30904" # from https://golang.org/dl
+    GO_VERSION_SHA="e141bd85577b875cc771cfcc18604989c861e93bbef377ba6c80d29e18f9a338" # from https://golang.org/dl
 elif [ "$ARCH" = 'x86_64' ]; then
     GO_ARCH="darwin-amd64"
-    GO_VERSION_SHA="7914497a302a132a465d33f5ee044ce05568bacdb390ab805cb75a3435a23f94" # from https://golang.org/dl
+    GO_VERSION_SHA="7c3d9cc70ee592515d92a44385c0cba5503fd0a9950f78d76a4587916c67a84d" # from https://golang.org/dl
 fi
 
 # This path is cachable. (Saving in /usr/local/ would cause issues restoring the cache.)
